@@ -8,14 +8,26 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type AuthenicateRequest struct {
+	Password string `json:"password"`
+	Account  string `json:"account"`
+}
+
 func main() {
 
 	e := echo.New()
 
 	e.POST("/authenticate", func(c echo.Context) error {
+
+		request := &AuthenicateRequest{}
+
+		err := c.Bind(request)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
 		//获取POST请求的参数
-		account := c.FormValue("account")
-		password := c.FormValue("password")
+		account := request.Account
+		password := request.Password
 		fmt.Println(account)
 		fmt.Println(password)
 		//连接到LDAP测试服务器
